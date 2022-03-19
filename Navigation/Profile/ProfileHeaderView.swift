@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ProfileHeaderView: UIView {
+class ProfileHeaderView: UITableViewHeaderFooterView {
 
     var avatarImageView: UIImageView = {
         var view = UIImageView()
@@ -91,8 +91,8 @@ class ProfileHeaderView: UIView {
         NSLayoutConstraint.activate([imageTopConstraint, imageLeadingConstraint, imageHeight, imageViewAspectRatio, self.imageToButton, imageToLabel, imageToStatusLabel, labelTopConstraint, buttonLeadingConstraint, buttonTrailingConstraint, buttonHeightConstraint, self.buttonToStatus].compactMap({ $0 }))
     }
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    override init(reuseIdentifier: String?) {
+        super.init(reuseIdentifier: reuseIdentifier)
         self.setupView()
     }
 
