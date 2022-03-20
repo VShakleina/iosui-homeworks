@@ -125,7 +125,7 @@ class LogInViewController: UIViewController {
         let scrollViewTop = self.scrollView.topAnchor.constraint(equalTo: self.view.topAnchor)
         let scrollViewLeading = self.scrollView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor)
         let scrollViewTrailing = self.scrollView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor)
-        let scrollViewBottom = self.scrollView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor)
+        let scrollViewBottom = self.scrollView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
 
         let contentViewTop = self.contentView.topAnchor.constraint(equalTo: self.scrollView.topAnchor)
         let contentViewBottom = self.contentView.bottomAnchor.constraint(equalTo: self.scrollView.bottomAnchor)

@@ -21,6 +21,10 @@
 		91EAB31027DE50A700C48364 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91EAB30F27DE50A700C48364 /* Post.swift */; };
 		91EAB31227DE589300C48364 /* PostTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91EAB31127DE589300C48364 /* PostTableViewCell.swift */; };
 		91EAB31427E4EE9B00C48364 /* Setupable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91EAB31327E4EE9B00C48364 /* Setupable.swift */; };
+		91EAB31927E657FC00C48364 /* PhotosTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91EAB31827E657FC00C48364 /* PhotosTableViewCell.swift */; };
+		91EAB31E27E694CA00C48364 /* PhotosViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91EAB31D27E694CA00C48364 /* PhotosViewController.swift */; };
+		91EAB32027E73D2D00C48364 /* PhotosCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91EAB31F27E73D2D00C48364 /* PhotosCollectionViewCell.swift */; };
+		91EAB32227E7490200C48364 /* Photos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91EAB32127E7490200C48364 /* Photos.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +44,10 @@
 		91EAB30F27DE50A700C48364 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
 		91EAB31127DE589300C48364 /* PostTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostTableViewCell.swift; sourceTree = "<group>"; };
 		91EAB31327E4EE9B00C48364 /* Setupable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Setupable.swift; sourceTree = "<group>"; };
+		91EAB31827E657FC00C48364 /* PhotosTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosTableViewCell.swift; sourceTree = "<group>"; };
+		91EAB31D27E694CA00C48364 /* PhotosViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosViewController.swift; sourceTree = "<group>"; };
+		91EAB31F27E73D2D00C48364 /* PhotosCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosCollectionViewCell.swift; sourceTree = "<group>"; };
+		91EAB32127E7490200C48364 /* Photos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Photos.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +88,7 @@
 				91EAB30227DBE81000C48364 /* InfoViewController.swift */,
 				91EAB30A27DBF63200C48364 /* Profile */,
 				91EAB31727E5FD0A00C48364 /* Post */,
+				91EAB31A27E6580400C48364 /* Photos */,
 				91EAB2F127DBE37D00C48364 /* Assets.xcassets */,
 				91EAB2F327DBE37D00C48364 /* LaunchScreen.storyboard */,
 				91EAB2F627DBE37D00C48364 /* Info.plist */,
@@ -105,6 +114,17 @@
 				91EAB31327E4EE9B00C48364 /* Setupable.swift */,
 			);
 			path = Post;
+			sourceTree = "<group>";
+		};
+		91EAB31A27E6580400C48364 /* Photos */ = {
+			isa = PBXGroup;
+			children = (
+				91EAB31827E657FC00C48364 /* PhotosTableViewCell.swift */,
+				91EAB31D27E694CA00C48364 /* PhotosViewController.swift */,
+				91EAB31F27E73D2D00C48364 /* PhotosCollectionViewCell.swift */,
+				91EAB32127E7490200C48364 /* Photos.swift */,
+			);
+			path = Photos;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -181,12 +201,16 @@
 				91EAB2FD27DBE77C00C48364 /* TabBarController.swift in Sources */,
 				91EAB2E927DBE37B00C48364 /* AppDelegate.swift in Sources */,
 				91EAB30327DBE81000C48364 /* InfoViewController.swift in Sources */,
+				91EAB32227E7490200C48364 /* Photos.swift in Sources */,
 				91EAB30927DBE89700C48364 /* ProfileHeaderView.swift in Sources */,
 				91EAB30C27DBF65200C48364 /* LogInViewController.swift in Sources */,
 				91EAB2EB27DBE37B00C48364 /* SceneDelegate.swift in Sources */,
 				91EAB30127DBE7CF00C48364 /* FeedViewController.swift in Sources */,
 				91EAB30527DBE83200C48364 /* ProfileViewController.swift in Sources */,
+				91EAB31927E657FC00C48364 /* PhotosTableViewCell.swift in Sources */,
 				91EAB2FF27DBE7B000C48364 /* PostViewController.swift in Sources */,
+				91EAB32027E73D2D00C48364 /* PhotosCollectionViewCell.swift in Sources */,
+				91EAB31E27E694CA00C48364 /* PhotosViewController.swift in Sources */,
 				91EAB31427E4EE9B00C48364 /* Setupable.swift in Sources */,
 				91EAB31227DE589300C48364 /* PostTableViewCell.swift in Sources */,
 			);
