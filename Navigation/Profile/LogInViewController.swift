@@ -131,16 +131,12 @@ class LogInViewController: UIViewController {
         let contentViewBottom = self.contentView.bottomAnchor.constraint(equalTo: self.scrollView.bottomAnchor)
         let contentViewLeading = self.contentView.leadingAnchor.constraint(equalTo: self.scrollView.leadingAnchor)
         let contentViewTrailing = self.contentView.trailingAnchor.constraint(equalTo: self.scrollView.trailingAnchor)
-
         let contentViewWidth = self.contentView.widthAnchor.constraint(equalTo: self.scrollView.widthAnchor)
-        let contentViewHeight = self.contentView.heightAnchor.constraint(equalToConstant: 506)
-        contentViewHeight.priority = UILayoutPriority(rawValue: 250)
 
-        let logoToTop = self.logoImage.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 120)
         let logoCenterX = NSLayoutConstraint(item: logoImage, attribute: .centerX, relatedBy: .equal, toItem: self.contentView, attribute: .centerX, multiplier: 1, constant: 1)
         let logoWidth = self.logoImage.widthAnchor.constraint(equalToConstant: 100)
         let logoHeight = self.logoImage.heightAnchor.constraint(equalTo: self.logoImage.widthAnchor, multiplier: 1)
-        let logoToStack = self.logoImage.bottomAnchor.constraint(equalTo: self.emailPasswordStack.topAnchor, constant: -120)
+
         let stackHeight = self.emailPasswordStack.heightAnchor.constraint(equalToConstant: 100)
         let stackLeading = self.emailPasswordStack.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 16)
         let stackTrailing = self.emailPasswordStack.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -16)
@@ -148,8 +144,24 @@ class LogInViewController: UIViewController {
         let buttonHeight = self.logInButton.heightAnchor.constraint(equalToConstant: 50)
         let buttonLeading = self.logInButton.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 16)
         let buttonTrailing = self.logInButton.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -16)
+        let buttonBottom = self.logInButton.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -16)
 
-        NSLayoutConstraint.activate([scrollViewTop, scrollViewBottom, scrollViewLeading, scrollViewTrailing, contentViewTop, contentViewBottom, contentViewLeading, contentViewTrailing, contentViewWidth, contentViewHeight, logoToTop, logoCenterX, logoWidth, logoHeight, logoToStack, stackHeight, stackLeading, stackTrailing, stackToButton, buttonHeight, buttonLeading, buttonTrailing])
+        NSLayoutConstraint.activate([scrollViewTop, scrollViewBottom, scrollViewLeading, scrollViewTrailing, contentViewTop, contentViewBottom, contentViewLeading, contentViewTrailing, contentViewWidth, logoCenterX, logoWidth, logoHeight, stackHeight, stackLeading, stackTrailing, stackToButton, buttonHeight, buttonLeading, buttonTrailing, buttonBottom])
+
+    }
+
+
+// Немного сложная конструкция) но для правильного отображения клавиатуры, мне нужен был определенный размер contentView, и я не могла пиниться к центру контент вью (размер контент вью меньше размера экрана). У нас в макете заданы констрейнты, поэтому сделала центровку только для маленьких экранов. Единственное не уверена, правильно ли я вынесла дополнительные констрейнты сюда. Насколько я понимаю, на стадии когда я добавляю первые констрейнты, фреймы ещё не определены, и было бы неправильно использовать моё решение в методе addConstraints, но там тоже работает, я неправильно понимаю что-то?)
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        let heightView = self.view.safeAreaLayoutGuide.layoutFrame.height
+        if heightView < 780 {    // 780 = (120 + 100 + 120 + 50) * 2
+            self.emailTextField.centerYAnchor.constraint(equalTo: self.contentView.topAnchor, constant: heightView/2).isActive = true
+            self.logoImage.centerYAnchor.constraint(equalTo: self.contentView.topAnchor, constant: heightView/4).isActive = true
+        } else {
+            self.logoImage.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 120).isActive = true
+            self.logoImage.bottomAnchor.constraint(equalTo: self.emailPasswordStack.topAnchor, constant: -120).isActive = true
+        }
     }
 
     @objc func didTapLogInButton(){
@@ -168,6 +180,7 @@ class LogInViewController: UIViewController {
     }
 
     override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
         let nc = NotificationCenter.default
         nc.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
         nc.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -175,13 +188,18 @@ class LogInViewController: UIViewController {
 
     @objc private func kbdShow(notification: NSNotification) {
         if let kbdSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            scrollView.contentInset.bottom = kbdSize.height
-            scrollView.verticalScrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: kbdSize.height, right: 0)
+            scrollView.contentInset.bottom = kbdSize.height // не пониманию почему, но без этого не скролится
+            let offset = self.contentView.frame.height + kbdSize.height - self.view.frame.height
+            if offset > 0 { //иначе на больших экранах всё съезжает вниз, к клавиатуре
+                self.scrollView.contentOffset = CGPoint(x: 0, y: offset)
+            }
         }
     }
 
     @objc private func kbdHide(notification: NSNotification) {
-        scrollView.contentInset.bottom = .zero
-        scrollView.verticalScrollIndicatorInsets = .zero
+        self.scrollView.contentOffset = .zero
+        self.scrollView.contentInset.bottom = .zero
     }
+
+
 }
