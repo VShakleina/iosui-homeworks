@@ -17,7 +17,7 @@ class FeedViewController: UIViewController {
         return stack
     }()
 
-    private lazy var firstButton: UIButton = {
+    private var firstButton: UIButton = {
         let fButton = UIButton()
         fButton.setTitle("Показать пост", for: .normal)
         fButton.setTitleColor(UIColor(red: 105/255, green: 40/255, blue: 63/255, alpha: 1), for: .normal)
@@ -29,7 +29,7 @@ class FeedViewController: UIViewController {
         return fButton
     }()
 
-    private lazy var secondButton: UIButton = {
+    private var secondButton: UIButton = {
         let sButton = UIButton()
         sButton.setTitle("Показать пост", for: .normal)
         sButton.setTitleColor(UIColor(red: 105/255, green: 40/255, blue: 63/255, alpha: 1), for: .normal)
@@ -51,18 +51,15 @@ class FeedViewController: UIViewController {
         self.view.addSubview(self.verticalStack)
         self.verticalStack.addArrangedSubview(self.firstButton)
         self.verticalStack.addArrangedSubview(self.secondButton)
-        self.addConstraint()
-    }
 
-    private func addConstraint() {
-        let centerXConst = NSLayoutConstraint(item: verticalStack, attribute: .centerX, relatedBy: .equal, toItem: self.view, attribute: .centerX, multiplier: 1, constant: 1)
-        let centerYConst = NSLayoutConstraint(item: verticalStack, attribute: .centerY, relatedBy: .equal, toItem: self.view, attribute: .centerY, multiplier: 1, constant: 1)
-        let firstButtonHeight = self.firstButton.heightAnchor.constraint(equalToConstant: 40)
-        let firstButtonWidth = self.firstButton.widthAnchor.constraint(equalToConstant: 180)
-        let secondButtonHeight = self.secondButton.heightAnchor.constraint(equalToConstant: 40)
-        let secondButtonWidth = self.secondButton.widthAnchor.constraint(equalToConstant: 180)
-
-        NSLayoutConstraint.activate([centerXConst, centerYConst, firstButtonHeight, firstButtonWidth, secondButtonHeight, secondButtonWidth])
+        NSLayoutConstraint.activate([
+            NSLayoutConstraint(item: verticalStack, attribute: .centerX, relatedBy: .equal, toItem: self.view, attribute: .centerX, multiplier: 1, constant: 1),
+            NSLayoutConstraint(item: verticalStack, attribute: .centerY, relatedBy: .equal, toItem: self.view, attribute: .centerY, multiplier: 1, constant: 1),
+            self.firstButton.heightAnchor.constraint(equalToConstant: 40),
+            self.firstButton.widthAnchor.constraint(equalToConstant: 180),
+            self.secondButton.heightAnchor.constraint(equalToConstant: 40),
+            self.secondButton.widthAnchor.constraint(equalToConstant: 180)
+            ])
 
     }
 

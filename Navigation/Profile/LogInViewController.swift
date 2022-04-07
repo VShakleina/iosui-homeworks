@@ -116,40 +116,51 @@ class LogInViewController: UIViewController {
         self.emailPasswordStack.addArrangedSubview(self.emailTextField)
         self.emailPasswordStack.addArrangedSubview(self.passwordTextField)
         self.contentView.addSubview(logInButton)
-        self.addConstraints()
         self.alphaForButton()
+
+        NSLayoutConstraint.activate([
+            self.scrollView.topAnchor.constraint(equalTo: self.view.topAnchor),
+            self.scrollView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
+            self.scrollView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor),
+            self.scrollView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
+
+            self.contentView.topAnchor.constraint(equalTo: self.scrollView.topAnchor),
+            self.contentView.bottomAnchor.constraint(equalTo: self.scrollView.bottomAnchor),
+            self.contentView.leadingAnchor.constraint(equalTo: self.scrollView.leadingAnchor),
+            self.contentView.trailingAnchor.constraint(equalTo: self.scrollView.trailingAnchor),
+            self.contentView.widthAnchor.constraint(equalTo: self.scrollView.widthAnchor),
+
+            NSLayoutConstraint(item: logoImage, attribute: .centerX, relatedBy: .equal, toItem: self.contentView, attribute: .centerX, multiplier: 1, constant: 1),
+            self.logoImage.widthAnchor.constraint(equalToConstant: 100),
+            self.logoImage.heightAnchor.constraint(equalTo: self.logoImage.widthAnchor, multiplier: 1),
+
+            self.emailPasswordStack.heightAnchor.constraint(equalToConstant: 100),
+            self.emailPasswordStack.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 16),
+            self.emailPasswordStack.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -16),
+            self.emailPasswordStack.bottomAnchor.constraint(equalTo: self.logInButton.topAnchor, constant: -16),
+
+            self.logInButton.heightAnchor.constraint(equalToConstant: 50),
+            self.logInButton.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 16),
+            self.logInButton.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -16),
+            self.logInButton.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -16)
+        ])
+
     }
 
-    private func addConstraints() {
-
-        let scrollViewTop = self.scrollView.topAnchor.constraint(equalTo: self.view.topAnchor)
-        let scrollViewLeading = self.scrollView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor)
-        let scrollViewTrailing = self.scrollView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor)
-        let scrollViewBottom = self.scrollView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
-
-        let contentViewTop = self.contentView.topAnchor.constraint(equalTo: self.scrollView.topAnchor)
-        let contentViewBottom = self.contentView.bottomAnchor.constraint(equalTo: self.scrollView.bottomAnchor)
-        let contentViewLeading = self.contentView.leadingAnchor.constraint(equalTo: self.scrollView.leadingAnchor)
-        let contentViewTrailing = self.contentView.trailingAnchor.constraint(equalTo: self.scrollView.trailingAnchor)
-
-        let contentViewWidth = self.contentView.widthAnchor.constraint(equalTo: self.scrollView.widthAnchor)
-        let contentViewHeight = self.contentView.heightAnchor.constraint(equalToConstant: 506)
-        contentViewHeight.priority = UILayoutPriority(rawValue: 250)
-
-        let logoToTop = self.logoImage.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 120)
-        let logoCenterX = NSLayoutConstraint(item: logoImage, attribute: .centerX, relatedBy: .equal, toItem: self.contentView, attribute: .centerX, multiplier: 1, constant: 1)
-        let logoWidth = self.logoImage.widthAnchor.constraint(equalToConstant: 100)
-        let logoHeight = self.logoImage.heightAnchor.constraint(equalTo: self.logoImage.widthAnchor, multiplier: 1)
-        let logoToStack = self.logoImage.bottomAnchor.constraint(equalTo: self.emailPasswordStack.topAnchor, constant: -120)
-        let stackHeight = self.emailPasswordStack.heightAnchor.constraint(equalToConstant: 100)
-        let stackLeading = self.emailPasswordStack.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 16)
-        let stackTrailing = self.emailPasswordStack.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -16)
-        let stackToButton = self.emailPasswordStack.bottomAnchor.constraint(equalTo: self.logInButton.topAnchor, constant: -16)
-        let buttonHeight = self.logInButton.heightAnchor.constraint(equalToConstant: 50)
-        let buttonLeading = self.logInButton.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 16)
-        let buttonTrailing = self.logInButton.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -16)
-
-        NSLayoutConstraint.activate([scrollViewTop, scrollViewBottom, scrollViewLeading, scrollViewTrailing, contentViewTop, contentViewBottom, contentViewLeading, contentViewTrailing, contentViewWidth, contentViewHeight, logoToTop, logoCenterX, logoWidth, logoHeight, logoToStack, stackHeight, stackLeading, stackTrailing, stackToButton, buttonHeight, buttonLeading, buttonTrailing])
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        let heightView = self.view.safeAreaLayoutGuide.layoutFrame.height
+        if heightView < 780 {
+            NSLayoutConstraint.activate([
+                self.emailPasswordStack.centerYAnchor.constraint(equalTo: self.contentView.topAnchor, constant: heightView/2),
+                self.logoImage.centerYAnchor.constraint(equalTo: self.contentView.topAnchor, constant: heightView/4)
+            ])
+        } else {
+            NSLayoutConstraint.activate([
+            self.logoImage.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 120),
+            self.logoImage.bottomAnchor.constraint(equalTo: self.emailPasswordStack.topAnchor, constant: -120)
+            ])
+        }
     }
 
     @objc func didTapLogInButton(){
@@ -168,6 +179,7 @@ class LogInViewController: UIViewController {
     }
 
     override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
         let nc = NotificationCenter.default
         nc.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
         nc.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -176,7 +188,10 @@ class LogInViewController: UIViewController {
     @objc private func kbdShow(notification: NSNotification) {
         if let kbdSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             scrollView.contentInset.bottom = kbdSize.height
-            scrollView.verticalScrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: kbdSize.height, right: 0)
+            let offset = self.contentView.frame.height + kbdSize.height - self.view.frame.height
+            if offset > 0 {
+                self.scrollView.contentOffset = CGPoint(x: 0, y: offset)
+            }
         }
     }
 

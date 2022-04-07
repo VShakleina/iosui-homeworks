@@ -82,7 +82,33 @@ class PostTableViewCell: UITableViewCell {
         self.backView.addSubview(self.likesLabel)
         self.backView.addSubview(self.viewsLabel)
 
-        self.addConstraints()
+        NSLayoutConstraint.activate([
+            self.backView.topAnchor.constraint(equalTo: self.contentView.topAnchor),
+            self.backView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
+            self.backView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor),
+            self.backView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor),
+
+            self.authorLabel.topAnchor.constraint(equalTo: self.backView.topAnchor, constant: 16),
+            self.authorLabel.leadingAnchor.constraint(equalTo: self.backView.leadingAnchor, constant: 16),
+            self.authorLabel.trailingAnchor.constraint(equalTo: self.backView.trailingAnchor, constant: -16),
+            self.authorLabel.bottomAnchor.constraint(equalTo: self.postImageView.topAnchor, constant: -16),
+
+            self.postImageView.leadingAnchor.constraint(equalTo: self.backView.leadingAnchor),
+            self.postImageView.trailingAnchor.constraint(equalTo: self.backView.trailingAnchor),
+            self.postImageView.bottomAnchor.constraint(equalTo: self.descriptionLabel.topAnchor, constant: -16),
+            self.postImageView.heightAnchor.constraint(equalTo: self.postImageView.widthAnchor, multiplier: 1.0),
+
+            self.descriptionLabel.leadingAnchor.constraint(equalTo: self.backView.leadingAnchor, constant: 16),
+            self.descriptionLabel.trailingAnchor.constraint(equalTo: self.backView.trailingAnchor, constant: -16),
+
+            self.likesLabel.topAnchor.constraint(equalTo: self.descriptionLabel.bottomAnchor, constant: 16),
+            self.likesLabel.leadingAnchor.constraint(equalTo: self.backView.leadingAnchor, constant: 16),
+            self.likesLabel.bottomAnchor.constraint(equalTo: self.backView.bottomAnchor, constant: -16),
+
+            self.viewsLabel.topAnchor.constraint(equalTo: self.descriptionLabel.bottomAnchor, constant: 16),
+            self.viewsLabel.trailingAnchor.constraint(equalTo: self.backView.trailingAnchor, constant: -16),
+            self.viewsLabel.bottomAnchor.constraint(equalTo: self.backView.bottomAnchor, constant: -16)
+        ])
     }
 
     required init?(coder: NSCoder) {
@@ -97,38 +123,6 @@ class PostTableViewCell: UITableViewCell {
         self.likesLabel.text = nil
         self.viewsLabel.text = nil
     }
-
-    private func addConstraints() {
-
-        let backViewTop = self.backView.topAnchor.constraint(equalTo: self.contentView.topAnchor)
-        let backViewLeading = self.backView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor)
-        let backViewTrailing = self.backView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor)
-        let backViewBottom = self.backView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor)
-
-        let authorLabelTop = self.authorLabel.topAnchor.constraint(equalTo: self.backView.topAnchor, constant: 16)
-        let authorLabelLeading = self.authorLabel.leadingAnchor.constraint(equalTo: self.backView.leadingAnchor, constant: 16)
-        let authorLabelTrailing = self.authorLabel.trailingAnchor.constraint(equalTo: self.backView.trailingAnchor, constant: -16)
-        let authorLabelBottom = self.authorLabel.bottomAnchor.constraint(equalTo: self.postImageView.topAnchor, constant: -16)
-
-        let postImageLeading = self.postImageView.leadingAnchor.constraint(equalTo: self.backView.leadingAnchor)
-        let postImageTrailing = self.postImageView.trailingAnchor.constraint(equalTo: self.backView.trailingAnchor)
-        let postImageBottom = self.postImageView.bottomAnchor.constraint(equalTo: self.descriptionLabel.topAnchor, constant: -16)
-        let postHeight = self.postImageView.heightAnchor.constraint(equalTo: self.postImageView.widthAnchor, multiplier: 1.0)
-
-        let descriptionLabelLeading = self.descriptionLabel.leadingAnchor.constraint(equalTo: self.backView.leadingAnchor, constant: 16)
-        let descriptionLabelTrailing = self.descriptionLabel.trailingAnchor.constraint(equalTo: self.backView.trailingAnchor, constant: -16)
-
-        let likesLabelTop = self.likesLabel.topAnchor.constraint(equalTo: self.descriptionLabel.bottomAnchor, constant: 16)
-        let likesLabelLeading = self.likesLabel.leadingAnchor.constraint(equalTo: self.backView.leadingAnchor, constant: 16)
-        let likesLabelBottom = self.likesLabel.bottomAnchor.constraint(equalTo: self.backView.bottomAnchor, constant: -16)
-
-        let viewsLabelTop = self.viewsLabel.topAnchor.constraint(equalTo: self.descriptionLabel.bottomAnchor, constant: 16)
-        let viewsLabelTrailing = self.viewsLabel.trailingAnchor.constraint(equalTo: self.backView.trailingAnchor, constant: -16)
-        let viewsLabelBottom = self.viewsLabel.bottomAnchor.constraint(equalTo: self.backView.bottomAnchor, constant: -16)
-
-        NSLayoutConstraint.activate([backViewTop, backViewLeading, backViewTrailing, backViewBottom, authorLabelTop, authorLabelLeading, authorLabelTrailing, authorLabelBottom, postImageLeading, postImageTrailing, postImageBottom, postHeight, descriptionLabelLeading, descriptionLabelTrailing, likesLabelTop, likesLabelLeading, likesLabelBottom, viewsLabelTop, viewsLabelTrailing, viewsLabelBottom])
-    }
-
 }
 
 extension PostTableViewCell: Setupable {

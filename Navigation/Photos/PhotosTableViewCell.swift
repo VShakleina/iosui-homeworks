@@ -25,6 +25,7 @@ class PhotosTableViewCell: UITableViewCell {
         return label
     }()
 
+    // Было замечание от Тимура, что здесь должна быть коллекция, а не стек с картинками. Надеюсь это не критично, попробую реализовать позже
     private var photoStack: UIStackView = {
         var stack = UIStackView()
         stack.axis = .horizontal
@@ -81,6 +82,8 @@ class PhotosTableViewCell: UITableViewCell {
         return image
     }()
 
+    private let widthPhoto = (UIScreen.main.bounds.width - 48) / 4
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.contentView.addSubview(backView)
@@ -91,48 +94,36 @@ class PhotosTableViewCell: UITableViewCell {
         self.photoStack.addArrangedSubview(photoImage2)
         self.photoStack.addArrangedSubview(photoImage3)
         self.photoStack.addArrangedSubview(photoImage4)
-        self.addConstraints()
+
+        NSLayoutConstraint.activate([
+            self.backView.topAnchor.constraint(equalTo: self.contentView.topAnchor),
+            self.backView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
+            self.backView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor),
+            self.backView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor),
+
+            self.photoLabel.topAnchor.constraint(equalTo: self.backView.topAnchor, constant: 12),
+            self.photoLabel.leadingAnchor.constraint(equalTo: self.backView.leadingAnchor, constant: 12),
+            self.photoLabel.bottomAnchor.constraint(equalTo: self.photoStack.topAnchor, constant: -12),
+            self.arrowImage.trailingAnchor.constraint(equalTo: self.backView.trailingAnchor, constant: -12),
+            self.arrowImage.centerYAnchor.constraint(equalTo: self.photoLabel.centerYAnchor),
+
+            self.photoImage1.widthAnchor.constraint(equalToConstant: widthPhoto),
+            self.photoImage2.widthAnchor.constraint(equalToConstant: widthPhoto),
+            self.photoImage3.widthAnchor.constraint(equalToConstant: widthPhoto),
+            self.photoImage4.widthAnchor.constraint(equalToConstant: widthPhoto),
+
+            self.photoImage1.heightAnchor.constraint(equalTo: photoImage1.widthAnchor, multiplier: 0.8),
+            self.photoImage2.heightAnchor.constraint(equalTo: photoImage2.widthAnchor, multiplier: 0.8),
+            self.photoImage3.heightAnchor.constraint(equalTo: photoImage3.widthAnchor, multiplier: 0.8),
+            self.photoImage4.heightAnchor.constraint(equalTo: photoImage4.widthAnchor, multiplier: 0.8),
+
+            self.photoStack.bottomAnchor.constraint(equalTo: self.backView.bottomAnchor, constant: -12),
+            self.photoStack.leadingAnchor.constraint(equalTo: self.backView.leadingAnchor, constant: 12),
+            self.photoStack.trailingAnchor.constraint(equalTo: self.backView.trailingAnchor, constant: -12)
+        ])
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    private func addConstraints() {
-
-        let backViewTop = self.backView.topAnchor.constraint(equalTo: self.contentView.topAnchor)
-        let backViewLeading = self.backView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor)
-        let backViewTrailing = self.backView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor)
-        let backViewBottom = self.backView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor)
-
-        let photoLabelTop = self.photoLabel.topAnchor.constraint(equalTo: self.backView.topAnchor, constant: 12)
-        let photoLabelLeading = self.photoLabel.leadingAnchor.constraint(equalTo: self.backView.leadingAnchor, constant: 12)
-        let photoLabelBottom = self.photoLabel.bottomAnchor.constraint(equalTo: self.photoStack.topAnchor, constant: -12)
-
-        let arrowImageTrailing = self.arrowImage.trailingAnchor.constraint(equalTo: self.backView.trailingAnchor, constant: -12)
-        let arrowImageY = self.arrowImage.centerYAnchor.constraint(equalTo: self.photoLabel.centerYAnchor)
-
-        let widthPhoto = (UIScreen.main.bounds.width - 48) / 4
-        let widthPhoto1 = self.photoImage1.widthAnchor.constraint(equalToConstant: widthPhoto)
-        let widthPhoto2 = self.photoImage2.widthAnchor.constraint(equalToConstant: widthPhoto)
-        let widthPhoto3 = self.photoImage3.widthAnchor.constraint(equalToConstant: widthPhoto)
-        let widthPhoto4 = self.photoImage4.widthAnchor.constraint(equalToConstant: widthPhoto)
-
-        //  на макете написано "width = height = (screen width - all offsets) /4", но при этом визуально видно, что картинки прямоугольной формы, сделала соотношение 0.8
-        let heightPhoto1 = self.photoImage1.heightAnchor.constraint(equalTo: photoImage1.widthAnchor, multiplier: 0.8)
-        let heightPhoto2 = self.photoImage2.heightAnchor.constraint(equalTo: photoImage2.widthAnchor, multiplier: 0.8)
-        let heightPhoto3 = self.photoImage3.heightAnchor.constraint(equalTo: photoImage3.widthAnchor, multiplier: 0.8)
-        let heightPhoto4 = self.photoImage4.heightAnchor.constraint(equalTo: photoImage4.widthAnchor, multiplier: 0.8)
-
-        let stackBottom = self.photoStack.bottomAnchor.constraint(equalTo: self.backView.bottomAnchor, constant: -12)
-        let stackLeading = self.photoStack.leadingAnchor.constraint(equalTo: self.backView.leadingAnchor, constant: 12)
-        let stackTrailing = self.photoStack.trailingAnchor.constraint(equalTo: self.backView.trailingAnchor, constant: -12)
-
-
-        NSLayoutConstraint.activate([backViewTop, backViewLeading, backViewTrailing, backViewBottom, photoLabelTop, photoLabelLeading, photoLabelBottom, arrowImageTrailing, arrowImageY, widthPhoto1, widthPhoto2, widthPhoto3, widthPhoto4, heightPhoto1, heightPhoto2, heightPhoto3, heightPhoto4, stackBottom, stackLeading, stackTrailing])
-    }
-
-
-
-
 }
