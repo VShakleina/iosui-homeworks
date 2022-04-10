@@ -25,8 +25,12 @@ class InfoViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = UIColor(red: 253/255, green: 221/255, blue: 230/255, alpha: 1)
         self.view.addSubview(self.alertButton)
+        self.setupView()
+    }
+
+    private func setupView() {
+        self.view.backgroundColor = UIColor(red: 253/255, green: 221/255, blue: 230/255, alpha: 1)
 
         NSLayoutConstraint.activate([
             self.alertButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -50),
@@ -34,7 +38,6 @@ class InfoViewController: UIViewController {
             self.alertButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -60),
             self.alertButton.heightAnchor.constraint(equalToConstant: 50)
         ])
-
     }
 
     @objc private func didTapAlertButton() {

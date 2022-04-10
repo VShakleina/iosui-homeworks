@@ -30,7 +30,6 @@ class TabBarController: UITabBarController {
                 return UIImage(systemName: "person.circle")
             }
         }
-
     }
 
     override func viewDidLoad() {
@@ -53,5 +52,4 @@ class TabBarController: UITabBarController {
             vc.tabBarItem.image = items[index].image
         })
     }
-
 }

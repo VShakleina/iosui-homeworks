@@ -11,6 +11,12 @@ class ProfileViewController: UIViewController {
 
     var closure: (() -> Void)?
 
+    private lazy var detailView: DetailedPostView = {
+        let detailView = DetailedPostView()
+        detailView.translatesAutoresizingMaskIntoConstraints = false
+        return detailView
+    }()
+
     private lazy var transparentView: UIView = {
         let view = UIView()
         view.alpha = 0
@@ -28,13 +34,7 @@ class ProfileViewController: UIViewController {
         return button
     }()
 
-    var avatarView = ProfileHeaderView()
-
-    private var isExpanded = false
-
-    private let tapGestureRecognizer = UITapGestureRecognizer()
-
-    private lazy var tableView: UITableView = {
+    lazy var tableView: UITableView = {
         let tableView = UITableView(frame: CGRect.zero, style: .grouped)
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 60
@@ -48,15 +48,25 @@ class ProfileViewController: UIViewController {
         return tableView
     }()
 
+    private let avatarView = ProfileHeaderView()
+    private let tapGestureRecognizer = UITapGestureRecognizer()
+    private var dataSourcePost = posts
+    private var isLikedPost = false
+    private var row = 0
+
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.navigationBar.isHidden = true
-        self.view.backgroundColor = .white
         self.view.addSubview(self.tableView)
         self.view.addSubview(self.transparentView)
         self.view.bringSubviewToFront(self.transparentView)
         self.transparentView.addSubview(self.avatarView.avatarImageView)
         self.transparentView.addSubview(self.crossButton)
+        self.setupView()
+    }
+
+    private func setupView() {
+        self.view.backgroundColor = .white
 
         NSLayoutConstraint.activate([
             self.tableView.topAnchor.constraint(equalTo: self.view.topAnchor),
@@ -70,13 +80,9 @@ class ProfileViewController: UIViewController {
             self.transparentView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
 
             self.crossButton.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            self.crossButton.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: -20)
-
+            self.crossButton.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
         ])
-
     }
-
-    private var dataSource = posts
 
     @objc private func didTapCross() {
         UIView.animate(withDuration: 0.3) {
@@ -99,16 +105,9 @@ class ProfileViewController: UIViewController {
         }
     }
 
-    private func didTapPhotoCell() {
-        let photoVC = PhotosViewController()
-        photoVC.closure = {
-        }
-        self.navigationController?.pushViewController(photoVC, animated: true)
-    }
-
 } 
 
-extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
+extension ProfileViewController: UITableViewDataSource, UITableViewDelegate, TapLikedDelegate, TapImagePostDelegate, TapLikedPostDelegate {
 
     func numberOfSections(in tableView: UITableView) -> Int {
         return 2
@@ -118,7 +117,7 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
         if section == 0 {
             return 1
         } else {
-            return self.dataSource.count
+            return self.dataSourcePost.count
         }
     }
 
@@ -132,9 +131,15 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "DefaultCell", for: indexPath)
                 return cell
             }
-            let post = self.dataSource[indexPath.row]
+            cell.likeDelegate = self
+            cell.postDelegate = self
+
+            let post = self.dataSourcePost[indexPath.row]
             let viewModel = PostTableViewCell.ViewModel(author: post.author, description: post.description, image: post.image, likes: post.likes, views: post.views)
             cell.setup(with: viewModel)
+
+            cell.likesLabel.textColor = self.dataSourcePost[indexPath.row].isLiked ? .systemPink : .black
+
             return cell
         }
     }
@@ -160,12 +165,23 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
         } else {}
     }
 
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        if indexPath.section == 1 {
+            let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { _, _, complete in
+                self.dataSourcePost.remove(at: indexPath.row)
+                tableView.deleteRows(at: [indexPath], with: .automatic)
+            }
+            let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
+            return configuration
+        } else { return nil }
+    }
+
     @objc func handleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) {
         guard tapGestureRecognizer === gestureRecognizer else { return }
         self.avatarView.avatarImageView.layer.cornerRadius = self.avatarView.avatarImageView.frame.height / 2
 
         UIView.animate(withDuration: 0.5) {
-            self.transparentView.alpha  = 1
+            self.transparentView.alpha  = 1.0
             self.avatarView.avatarImageView.layer.cornerRadius = 0
 
             NSLayoutConstraint.deactivate([self.avatarView.avatarTopConstraint, self.avatarView.avatarLeadingConstraint, self.avatarView.avatarWidth, self.avatarView.avatarCenterX, self.avatarView.avatarCenterY].compactMap( { $0 }))
@@ -182,8 +198,67 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
             self.crossButton.alpha = 1
             self.view.layoutIfNeeded()
         }
-
     }
+
+    private func didTapPhotoCell() {
+        let photoVC = PhotosViewController()
+        photoVC.closure = {
+        }
+        self.navigationController?.pushViewController(photoVC, animated: true)
+    }
+
+    func updateLike(indexRow: Int ) {  // лайк можно установить, можно снять
+        if self.dataSourcePost[indexRow].isLiked {
+            self.dataSourcePost[indexRow].likes -= 1
+        } else {
+            self.dataSourcePost[indexRow].likes += 1
+        }
+        self.dataSourcePost[indexRow].isLiked.toggle()
+        self.tableView.reloadData()
+    }
+
+    func enlargePost(indexRow: Int) {
+        self.dataSourcePost[indexRow].views += 1
+        self.row = indexRow
+        self.tableView.reloadData()
+
+        self.view.addSubview(self.detailView)
+        self.view.bringSubviewToFront(self.detailView)
+        self.detailView.likePostDelegate = self
+        
+        NSLayoutConstraint.activate([
+            self.detailView.topAnchor.constraint(equalTo: self.view.topAnchor),
+            self.detailView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            self.detailView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+            self.detailView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+        ])
+
+        self.detailView.authorLabel.text = dataSourcePost[indexRow].author
+        self.detailView.postImageView.image = UIImage(named: dataSourcePost[indexRow].image)
+        self.detailView.descriptionLabel.text = dataSourcePost[indexRow].description
+        self.detailView.likesLabel.text = "Likes: " + String(dataSourcePost[indexRow].likes)
+        self.detailView.viewsLabel.text = "Views: " + String(dataSourcePost[indexRow].views)
+        self.isLikedPost = dataSourcePost[indexRow].isLiked
+
+        self.detailView.likesLabel.textColor = self.isLikedPost ? .systemPink : .black
+ 
+        self.detailView.isHidden = false
+    }
+
+    func updateLikePost() {
+        if self.dataSourcePost[row].isLiked {
+            self.dataSourcePost[row].likes -= 1
+        } else {
+            self.dataSourcePost[row].likes += 1
+        }
+        self.dataSourcePost[row].isLiked.toggle()
+
+        self.detailView.likesLabel.textColor = self.dataSourcePost[row].isLiked ? .systemPink : .black
+        self.detailView.likesLabel.text = "Likes: " + String(self.dataSourcePost[row].likes)
+
+        self.tableView.reloadData()
+    }
+
 }
 
 

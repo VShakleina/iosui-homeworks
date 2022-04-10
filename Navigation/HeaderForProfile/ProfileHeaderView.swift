@@ -130,16 +130,26 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
         self.avatarCenterY?.priority = UILayoutPriority(rawValue: 999)
         NSLayoutConstraint.activate([self.avatarTopConstraint, self.avatarLeadingConstraint, self.avatarWidth, self.avatarCenterX, self.avatarCenterY].compactMap({ $0 }))
     }
-
     @objc private func didTapShowStatusButton() {
-        if statusTextField.hasText {
-            if let text = statusTextField.text {
-                print(text)
+        if let text = statusTextField.text {
+            if text.isEmpty {
+                self.shakeTextField(textField: statusTextField)
+            } else {
                 self.statusLabel.text = text
             }
             self.statusTextField.text = ""
             self.endEditing(true)
         }
+    }
+
+    private func shakeTextField(textField: UITextField) {
+        let animation = CABasicAnimation(keyPath: "position")
+        animation.duration = 0.05
+        animation.repeatCount = 4
+        animation.autoreverses = true
+        animation.fromValue = NSValue(cgPoint: CGPoint(x: textField.center.x - 2, y: textField.center.y))
+        animation.toValue = NSValue(cgPoint: CGPoint(x: textField.center.x + 2, y: textField.center.y))
+        textField.layer.add(animation, forKey: "position")
     }
 }
 

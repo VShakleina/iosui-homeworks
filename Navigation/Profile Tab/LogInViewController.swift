@@ -92,6 +92,17 @@ class LogInViewController: UIViewController {
         return button
     }()
 
+    private lazy var alertLabel: UILabel = {
+        let label = UILabel()
+        label.isHidden = true
+        label.textColor = .systemRed
+        label.textAlignment = .center
+        label.font = UIFont.boldSystemFont(ofSize: 14)
+        label.text = "Пароль должен содержать от 8 до 16 символов"
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+
     private func alphaForButton() {
         switch logInButton.state {
         case .normal:
@@ -103,9 +114,11 @@ class LogInViewController: UIViewController {
         }
     }
 
+    private var stackToButton: NSLayoutConstraint?
+    private var alertToButton: NSLayoutConstraint?
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = .white
         self.tabBarController?.tabBar.backgroundColor = .white
         self.navigationController?.navigationBar.isHidden = true
         self.view.addSubview(scrollView)
@@ -116,7 +129,13 @@ class LogInViewController: UIViewController {
         self.emailPasswordStack.addArrangedSubview(self.emailTextField)
         self.emailPasswordStack.addArrangedSubview(self.passwordTextField)
         self.contentView.addSubview(logInButton)
+        self.contentView.addSubview(alertLabel)
+        self.setupView()
         self.alphaForButton()
+    }
+
+    private func setupView() {
+        self.view.backgroundColor = .white
 
         NSLayoutConstraint.activate([
             self.scrollView.topAnchor.constraint(equalTo: self.view.topAnchor),
@@ -137,19 +156,22 @@ class LogInViewController: UIViewController {
             self.emailPasswordStack.heightAnchor.constraint(equalToConstant: 100),
             self.emailPasswordStack.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 16),
             self.emailPasswordStack.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -16),
-            self.emailPasswordStack.bottomAnchor.constraint(equalTo: self.logInButton.topAnchor, constant: -16),
+
 
             self.logInButton.heightAnchor.constraint(equalToConstant: 50),
             self.logInButton.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 16),
             self.logInButton.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -16),
-            self.logInButton.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -16)
+            self.logInButton.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: -16),
+
+            self.alertLabel.topAnchor.constraint(equalTo: self.emailPasswordStack.bottomAnchor, constant: 16),
+            self.alertLabel.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor,constant: 16),
+            self.alertLabel.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -16)
         ])
 
-    }
+        self.stackToButton = self.emailPasswordStack.bottomAnchor.constraint(equalTo: self.logInButton.topAnchor, constant: -16)
+        NSLayoutConstraint.activate([self.stackToButton].compactMap( { $0 }))
 
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        let heightView = self.view.safeAreaLayoutGuide.layoutFrame.height
+        let heightView = UIScreen.main.bounds.height
         if heightView < 780 {
             NSLayoutConstraint.activate([
                 self.emailPasswordStack.centerYAnchor.constraint(equalTo: self.contentView.topAnchor, constant: heightView/2),
@@ -163,12 +185,67 @@ class LogInViewController: UIViewController {
         }
     }
 
-    @objc func didTapLogInButton(){
-        alphaForButton()
-        let profileVC = ProfileViewController()
-        profileVC.closure = {
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        self.alphaForButton()
+    }
+
+    @objc func didTapLogInButton() {
+        self.view.endEditing(true)
+
+        var count = 0
+        var flag = true
+
+        if let email = emailTextField.text {
+            if email.isEmpty {
+                self.shakeTextField(textField: emailTextField)
+                count += 1
+            } else {
+                if email != correctLogin {
+                    flag = false
+                }
+            }
         }
-        self.navigationController?.pushViewController(profileVC, animated: true)
+
+        if let password = passwordTextField.text {
+            if password.isEmpty {
+                self.shakeTextField(textField: passwordTextField)
+                count += 1
+            } else {
+                let passwordLength = password.count
+                if (passwordLength < 8) || (passwordLength > 16) {
+                    self.alertLabel.isHidden = false
+
+                    NSLayoutConstraint.deactivate([self.stackToButton].compactMap( { $0 }))
+
+                    self.alertToButton = self.alertLabel.bottomAnchor.constraint(equalTo: self.logInButton.topAnchor, constant: -16)
+                    NSLayoutConstraint.activate([self.alertToButton].compactMap( { $0 }))
+
+                    count += 1
+                } else {
+                    self.alertLabel.isHidden = true
+                    NSLayoutConstraint.deactivate([self.alertToButton].compactMap( { $0 }))
+                    NSLayoutConstraint.activate([self.stackToButton].compactMap( { $0 }))
+                }
+                if password != correctPassword {
+                    flag = false
+                }
+            }
+        }
+
+        if flag && (count == 0) {
+            let profileVC = ProfileViewController()
+            profileVC.closure = {
+            }
+            self.navigationController?.pushViewController(profileVC, animated: true)
+        } else if (count == 0) && flag != true {
+            let alert = UIAlertController(title: "Внимание!", message: "Введенные логин и пароль не совпадают", preferredStyle: UIAlertController.Style.alert)
+            alert.addAction(UIAlertAction(title: "Попробовать ещё", style: .cancel, handler: { (_) in
+                self.passwordTextField.text = ""
+                self.emailTextField.text = ""
+            }))
+            self.present(alert, animated: true, completion: nil)
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -199,4 +276,17 @@ class LogInViewController: UIViewController {
         scrollView.contentInset.bottom = .zero
         scrollView.verticalScrollIndicatorInsets = .zero
     }
+
+    private func shakeTextField(textField: UITextField) {
+        let animation = CABasicAnimation(keyPath: "position")
+        animation.duration = 0.05
+        animation.repeatCount = 4
+        animation.autoreverses = true
+        animation.fromValue = NSValue(cgPoint: CGPoint(x: textField.center.x - 2, y: textField.center.y))
+        animation.toValue = NSValue(cgPoint: CGPoint(x: textField.center.x + 2, y: textField.center.y))
+        textField.layer.add(animation, forKey: "position")
+        textField.attributedPlaceholder = NSAttributedString(string: textField.placeholder ?? "",
+                                                             attributes: [NSAttributedString.Key.foregroundColor: UIColor.red])
+    }
+
 }

@@ -17,7 +17,7 @@ class PostTableViewCell: UITableViewCell {
         let views: Int
     }
 
-    private var backView: UIView = {
+    var backView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -38,6 +38,7 @@ class PostTableViewCell: UITableViewCell {
         let image = UIImageView()
         image.backgroundColor = .black
         image.contentMode = .scaleAspectFit
+        image.isUserInteractionEnabled = true
         image.translatesAutoresizingMaskIntoConstraints = false
         return image
     }()
@@ -52,11 +53,12 @@ class PostTableViewCell: UITableViewCell {
         return label
     }()
 
-    private var likesLabel: UILabel = {
+    var likesLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16, weight: .regular)
         label.textColor = .black
         label.backgroundColor = .white
+        label.isUserInteractionEnabled = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -72,15 +74,22 @@ class PostTableViewCell: UITableViewCell {
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-
-        self.contentView.backgroundColor = .white
-
         self.contentView.addSubview(self.backView)
         self.backView.addSubview(self.authorLabel)
         self.backView.addSubview(self.postImageView)
         self.backView.addSubview(self.descriptionLabel)
         self.backView.addSubview(self.likesLabel)
         self.backView.addSubview(self.viewsLabel)
+        self.setupView()
+        self.setupGesture()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func setupView() {
+        self.contentView.backgroundColor = .white
 
         NSLayoutConstraint.activate([
             self.backView.topAnchor.constraint(equalTo: self.contentView.topAnchor),
@@ -111,8 +120,12 @@ class PostTableViewCell: UITableViewCell {
         ])
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    private func setupGesture() {
+        let tapLike = UITapGestureRecognizer(target: self, action: #selector(likeTapGesture(_:)))
+        self.likesLabel.addGestureRecognizer(tapLike)
+
+        let tapPostImage = UITapGestureRecognizer(target: self, action: #selector(imageTapGesture(_:)))
+        self.postImageView.addGestureRecognizer(tapPostImage)
     }
 
     override func prepareForReuse() {
@@ -123,6 +136,25 @@ class PostTableViewCell: UITableViewCell {
         self.likesLabel.text = nil
         self.viewsLabel.text = nil
     }
+
+    var likeDelegate: TapLikedDelegate?
+
+    @objc func likeTapGesture(_ gestureRecognizer: UITapGestureRecognizer) {
+        guard let cell = self.likesLabel.next(PostTableViewCell.self), let indexPath = cell.indexPath else {
+                return
+            }
+        self.likeDelegate?.updateLike(indexRow: indexPath.row)
+    }
+
+    var postDelegate: TapImagePostDelegate?
+
+    @objc func imageTapGesture(_ gestureRecognizer: UITapGestureRecognizer) {
+        guard let cell = self.postImageView.next(PostTableViewCell.self), let indexPath = cell.indexPath else {
+                return
+            }
+        self.postDelegate?.enlargePost(indexRow: indexPath.row)
+    }
+
 }
 
 extension PostTableViewCell: Setupable {
@@ -135,6 +167,6 @@ extension PostTableViewCell: Setupable {
         self.descriptionLabel.text = viewModel.description
         self.likesLabel.text = "Likes: " + String(viewModel.likes)
         self.viewsLabel.text = "Views: " + String(viewModel.views)
-
     }
 }
+

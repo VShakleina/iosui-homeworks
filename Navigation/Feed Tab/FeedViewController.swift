@@ -44,13 +44,17 @@ class FeedViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tabBarController?.tabBar.backgroundColor = .white
-        self.view.backgroundColor = UIColor(red: 222/255, green: 193/255, blue: 210/255, alpha: 1)
         self.navigationController?.navigationBar.prefersLargeTitles = true
         self.navigationItem.title = "Лента"
         self.navigationItem.backButtonTitle = ""
         self.view.addSubview(self.verticalStack)
         self.verticalStack.addArrangedSubview(self.firstButton)
         self.verticalStack.addArrangedSubview(self.secondButton)
+        self.setupView()
+    }
+
+    private func setupView() {
+        self.view.backgroundColor = UIColor(red: 222/255, green: 193/255, blue: 210/255, alpha: 1)
 
         NSLayoutConstraint.activate([
             NSLayoutConstraint(item: verticalStack, attribute: .centerX, relatedBy: .equal, toItem: self.view, attribute: .centerX, multiplier: 1, constant: 1),
@@ -59,8 +63,7 @@ class FeedViewController: UIViewController {
             self.firstButton.widthAnchor.constraint(equalToConstant: 180),
             self.secondButton.heightAnchor.constraint(equalToConstant: 40),
             self.secondButton.widthAnchor.constraint(equalToConstant: 180)
-            ])
-
+        ])
     }
 
     @objc private func didTapPostButton() {

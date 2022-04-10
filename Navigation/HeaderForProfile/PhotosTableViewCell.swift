@@ -25,7 +25,6 @@ class PhotosTableViewCell: UITableViewCell {
         return label
     }()
 
-    // Было замечание от Тимура, что здесь должна быть коллекция, а не стек с картинками. Надеюсь это не критично, попробую реализовать позже
     private var photoStack: UIStackView = {
         var stack = UIStackView()
         stack.axis = .horizontal
@@ -94,7 +93,14 @@ class PhotosTableViewCell: UITableViewCell {
         self.photoStack.addArrangedSubview(photoImage2)
         self.photoStack.addArrangedSubview(photoImage3)
         self.photoStack.addArrangedSubview(photoImage4)
+        self.setupView()
+    }
 
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func setupView() {
         NSLayoutConstraint.activate([
             self.backView.topAnchor.constraint(equalTo: self.contentView.topAnchor),
             self.backView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
@@ -121,9 +127,5 @@ class PhotosTableViewCell: UITableViewCell {
             self.photoStack.leadingAnchor.constraint(equalTo: self.backView.leadingAnchor, constant: 12),
             self.photoStack.trailingAnchor.constraint(equalTo: self.backView.trailingAnchor, constant: -12)
         ])
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }
